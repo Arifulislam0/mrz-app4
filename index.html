@@ -7,28 +7,26 @@
     <link href="https://fonts.cdnfonts.com/css/ocr-b" rel="stylesheet">
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background: linear-gradient(135deg, #e0eafc, #cfdef3); padding: 10px; margin: 0; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-        .container { width: 95%; max-width: 900px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 2px solid #fff; }
+        .container { width: 95%; max-width: 900px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 2px solid #fff; position: relative; }
         
         h2 { text-align: center; color: #1a73e8; margin: 0 0 5px 0; font-size: 22px; text-transform: uppercase; }
         .service-note { text-align: center; font-size: 13px; color: #d93025; font-weight: bold; background: #fff1f0; padding: 5px; border-radius: 5px; margin-bottom: 15px; }
         
-        /* কালারফুল ইনপুট গ্রিড */
         .input-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-        .input-group { margin-bottom: 5px; }
         label { display: block; margin-bottom: 3px; font-size: 11px; font-weight: 700; color: #555; text-transform: uppercase; }
         
         input, select { width: 100%; padding: 8px; border: 2px solid #dee2e6; border-radius: 6px; box-sizing: border-box; font-size: 13px; transition: 0.3s; background: #fdfdfd; }
+        input:focus { outline: none; border-color: #1a73e8; background: #fff; }
         
-        /* আলাদা আলাদা কালার বর্ডার */
-        input:focus { outline: none; border-color: #1a73e8; background: #fff; box-shadow: 0 0 5px rgba(26,115,232,0.2); }
+        /* রঙিন বর্ডার */
         #country { border-left: 4px solid #ffc107; }
         #surname, #givenName { border-left: 4px solid #17a2b8; }
         #passNo { border-left: 4px solid #dc3545; }
         #dob, #expiry { border-left: 4px solid #28a745; }
-        #personalNo { border-left: 4px solid #6f42c1; grid-column: span 2; }
+        #personalNo { border-left: 4px solid #6f42c1; grid-column: span 1; }
 
-        /* রেজাল্ট বক্স ডিজাইন */
-        .result-section { margin-top: 15px; padding: 15px; background: #f1f3f4; border-radius: 10px; border: 1px solid #ddd; }
+        /* রেজাল্ট বক্স - পিক্সেল পারফেক্ট সাইজ */
+        .result-section { margin-top: 15px; padding: 10px; background: #f1f3f4; border-radius: 10px; }
         #mrz-output { 
             background: #1e1e1e; 
             color: #00ff41; 
@@ -40,12 +38,14 @@
             line-height: 1.4; 
             border-radius: 5px;
             white-space: pre; 
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             box-shadow: inset 0 0 10px #000;
+            min-height: 50px;
+            display: block;
         }
 
-        .btn-group { display: flex; gap: 10px; }
-        button { flex: 1; padding: 10px; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: bold; transition: 0.3s; color: white; }
+        .btn-group { display: flex; gap: 10px; width: 100%; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: bold; transition: 0.3s; color: white; display: block; }
         .btn-gen { background: #1a73e8; }
         .btn-gen:hover { background: #1557b0; }
         .btn-copy { background: #28a745; }
@@ -53,16 +53,13 @@
 
         .footer { text-align: center; margin-top: 15px; font-size: 13px; color: #444; border-top: 1px solid #eee; padding-top: 10px; }
         .footer b { color: #1a73e8; }
-
-        /* পিসিতে ফিট করার জন্য মিডিয়া কুয়েরি */
-        @media (min-height: 700px) { .container { margin-top: 0; } }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>🚀 Ariful Universal MRZ Generator</h2>
-    <div class="service-note">KYC Services & Quality Work. Contact: +8801981071493</div>
+    <div class="service-note">All types of KYC services available. WhatsApp: +8801981071493</div>
     
     <div class="input-grid">
         <div class="input-group">
@@ -104,17 +101,16 @@
             <input type="text" id="expiry" placeholder="300115">
         </div>
         <div class="input-group">
-            <label>Personal Number (Optional)</label>
+            <label>Personal Number</label>
             <input type="text" id="personalNo" placeholder="<<<<<<<<<<<<<<">
         </div>
     </div>
 
     <div class="result-section">
-        <div id="mrz-output">P<ETHSHIFERAW<<TSEGAW<<<<<<<<<<<<<<<<<<<<<<
-EQ18270187ETH9711219M3001156<<<<<<<<<<<<<<06</div>
+        <div id="mrz-output">Output will appear here...</div>
         <div class="btn-group">
             <button class="btn-gen" onclick="generateMRZ()">GENERATE MRZ</button>
-            <button class="btn-copy" onclick="copyResult()">COPY RESULT</button>
+            <button class="btn-copy" id="copyBtn" onclick="copyResult()">COPY RESULT</button>
         </div>
     </div>
 
@@ -146,8 +142,18 @@ EQ18270187ETH9711219M3001156<<<<<<<<<<<<<<06</div>
 
     function copyResult() {
         const text = document.getElementById('mrz-output').innerText;
+        if (text.includes("appear")) return;
         navigator.clipboard.writeText(text);
-        alert("MRZ Copied Successfully!");
+        
+        // বাটন ফিডব্যাক
+        const btn = document.getElementById('copyBtn');
+        const originalText = btn.innerText;
+        btn.innerText = "COPIED!";
+        btn.style.background = "#000";
+        setTimeout(() => {
+            btn.innerText = originalText;
+            btn.style.background = "#28a745";
+        }, 1500);
     }
 </script>
 
