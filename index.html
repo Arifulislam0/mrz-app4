@@ -19,7 +19,7 @@
         input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 14px; transition: 0.3s; }
         input:focus, select:focus { border-color: #007bff; outline: none; box-shadow: 0 0 5px rgba(0,123,255,0.2); }
 
-        #mrz-output { margin-top: 25px; background: #222; color: #00ff41; padding: 20px; font-family: 'Courier New', monospace; border-radius: 8px; font-size: 18px; text-align: center; letter-spacing: 2px; line-height: 1.5; box-shadow: inset 0 0 10px #000; overflow-x: auto; }
+        #mrz-output { margin-top: 25px; background: #222; color: #00ff41; padding: 20px; font-family: 'Courier New', monospace; border-radius: 8px; font-size: 18px; text-align: center; letter-spacing: 2px; line-height: 1.5; box-shadow: inset 0 0 10px #000; overflow-x: auto; white-space: pre-wrap; }
         
         .btn-container { display: flex; gap: 10px; margin-top: 15px; }
         button { flex: 1; padding: 12px; font-size: 16px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; transition: 0.3s; }
@@ -27,6 +27,9 @@
         .btn-generate:hover { background: #0056b3; }
         .btn-copy { background: #28a745; color: white; }
         .btn-copy:hover { background: #218838; }
+
+        .footer { text-align: center; margin-top: 30px; border-top: 1px solid #eee; padding-top: 15px; font-size: 14px; color: #777; }
+        .footer b { color: #333; }
 
         @media (max-width: 500px) { .input-grid { grid-template-columns: 1fr; } .full-width { grid-column: span 1; } }
     </style>
@@ -86,6 +89,11 @@
             <label>Expiry Date (YYMMDD):</label>
             <input type="text" id="expiry" placeholder="350520" maxlength="6">
         </div>
+
+        <div class="input-group full-width">
+            <label>Personal Number (Optional):</label>
+            <input type="text" id="personalNo" placeholder="1234567890" maxlength="14">
+        </div>
     </div>
 
     <div class="btn-container">
@@ -96,6 +104,11 @@
     
     <div class="btn-container">
         <button class="btn-copy" onclick="copyResult()">Copy Result</button>
+    </div>
+
+    <div class="footer">
+        Design & Developed By: <b>Ariful</b><br>
+        WhatsApp: <b>+8801981071493</b>
     </div>
 </div>
 
@@ -109,14 +122,16 @@
         const dob = (document.getElementById('dob').value || "000000");
         const gender = document.getElementById('gender').value;
         const expiry = (document.getElementById('expiry').value || "000000");
+        const personalNo = (document.getElementById('personalNo').value || "").toUpperCase().padEnd(14, '<');
 
         // Line 1 Construction
         let line1 = docType + country + surname + "<<" + givenName;
         line1 = line1.padEnd(44, '<').substring(0, 44);
 
-        // Line 2 Construction (Simplified Logic)
-        // Format: PassNo(9) + Check(1) + Country(3) + DOB(6) + Check(1) + Gender(1) + Expiry(6) + Check(1) + Personal(14) + FinalCheck(1)
-        let line2 = passNo + "0" + country + dob + "0" + gender + expiry + "0<<<<<<<<<<<<<<0";
+        // Line 2 Construction
+        // Format: PassNo(9) + CheckDigit(1) + Country(3) + DOB(6) + CheckDigit(1) + Gender(1) + Expiry(6) + CheckDigit(1) + PersonalNo(14) + CheckDigit(1)
+        // For simplicity, check digits are set to '0' or '<' as per common practice in basic tools
+        let line2 = passNo + "0" + country + dob + "0" + gender + expiry + "0" + personalNo + "0";
         line2 = line2.substring(0, 44);
 
         document.getElementById('mrz-output').innerText = line1 + "\n" + line2;
@@ -124,7 +139,7 @@
 
     function copyResult() {
         const text = document.getElementById('mrz-output').innerText;
-        if (text === "Output will appear here...") return;
+        if (text.includes("Output will appear")) return;
         navigator.clipboard.writeText(text);
         alert("MRZ copied successfully!");
     }
