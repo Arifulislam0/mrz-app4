@@ -5,45 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ariful Universal MRZ Generator</title>
     <style>
-        body { font-family: 'Arial', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
-        .container { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 900px; }
-        h2 { color: #333; text-align: center; margin-bottom: 20px; text-transform: uppercase; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --dark: #2c3e50;
+            --bg: #f5f7fa;
+            --mrz-bg: #1a1a1a;
+            --mrz-color: #00ff41;
+        }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .container { background: #fff; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 800px; }
+        
+        .header { text-align: center; border-bottom: 2px solid #eee; margin-bottom: 20px; padding-bottom: 10px; }
+        .header h2 { margin: 0; color: var(--dark); font-size: 22px; letter-spacing: 1px; }
+        .header .whatsapp { color: var(--primary); font-weight: bold; margin: 5px 0; font-size: 14px; }
+        .header p { margin: 5px 0; color: #7f8c8d; font-size: 13px; font-weight: 500; }
+
+        .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
         .input-group { display: flex; flex-direction: column; }
-        label { font-size: 11px; font-weight: bold; color: #555; margin-bottom: 5px; text-transform: uppercase; }
-        input, select { padding: 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; transition: 0.3s; }
-        input:focus { border-color: #007bff; outline: none; box-shadow: 0 0 5px rgba(0,123,255,0.2); }
-        .output-container { margin-top: 30px; background: #000; padding: 20px; border-radius: 10px; position: relative; }
-        .output-box { color: #00ff41; font-family: 'Courier New', Courier, monospace; font-size: 20px; font-weight: bold; letter-spacing: 3px; line-height: 1.6; white-space: pre; overflow-x: auto; text-align: center; }
-        .footer { text-align: center; margin-top: 20px; font-size: 13px; color: #777; font-weight: bold; }
-        .copy-btn { margin-top: 10px; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
+        label { font-size: 11px; font-weight: bold; color: #95a5a6; margin-bottom: 4px; text-transform: uppercase; }
+        input, select { padding: 10px; border: 1px solid #dfe6e9; border-radius: 6px; font-size: 13px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 8px rgba(52,152,219,0.2); }
+
+        .output-container { margin-top: 25px; background: var(--mrz-bg); padding: 20px; border-radius: 10px; border-top: 4px solid var(--secondary); }
+        .output-box { color: var(--mrz-color); font-family: 'Courier New', monospace; font-size: 18px; font-weight: bold; letter-spacing: 2px; line-height: 1.5; text-align: center; white-space: pre; overflow-x: auto; }
+        
+        .actions { display: flex; gap: 10px; margin-top: 15px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.3s; color: #fff; text-transform: uppercase; }
+        .copy-btn { background: var(--secondary); }
+        .copy-btn:hover { background: #27ae60; }
+        .reset-btn { background: #e74c3c; }
+        .reset-btn:hover { background: #c0392b; }
+
+        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #bdc3c7; border-top: 1px solid #eee; padding-top: 15px; }
+        .footer span { color: var(--dark); font-weight: bold; }
+
+        @media (max-width: 600px) {
+            .grid { grid-template-columns: 1fr 1fr; }
+            .output-box { font-size: 14px; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>ARIFUL UNIVERSAL MRZ GENERATOR</h2>
+    <div class="header">
+        <h2>ARIFUL UNIVERSAL MRZ GENERATOR</h2>
+        <div class="whatsapp">WhatsApp: +8801981071493</div>
+        <p>Expert Provider of All Kinds of KYC & Digital Services</p>
+    </div>
     
     <div class="grid">
         <div class="input-group">
-            <label>Document Type (P for Passport)</label>
+            <label>Doc Type</label>
             <input type="text" id="docType" value="P" maxlength="1">
         </div>
         <div class="input-group">
-            <label>Country Code (e.g., BGD)</label>
+            <label>Country Code</label>
             <input type="text" id="country" value="BGD" maxlength="3">
         </div>
         <div class="input-group">
-            <label>Surname (নামের শেষ অংশ)</label>
+            <label>Passport No</label>
+            <input type="text" id="passport" placeholder="A12345678" maxlength="9">
+        </div>
+        <div class="input-group">
+            <label>Surname</label>
             <input type="text" id="surname" placeholder="ISLAM">
         </div>
         <div class="input-group">
-            <label>Given Names (নামের প্রথম অংশ)</label>
+            <label>Given Names</label>
             <input type="text" id="givenNames" placeholder="ARIFUL">
-        </div>
-        <div class="input-group">
-            <label>Passport Number</label>
-            <input type="text" id="passport" maxlength="9" placeholder="A08614535">
         </div>
         <div class="input-group">
             <label>Gender</label>
@@ -54,35 +85,36 @@
             </select>
         </div>
         <div class="input-group">
-            <label>Date of Birth (YYMMDD)</label>
-            <input type="text" id="dob" maxlength="6" placeholder="950603">
+            <label>DOB (YYMMDD)</label>
+            <input type="text" id="dob" placeholder="950603" maxlength="6">
         </div>
         <div class="input-group">
-            <label>Expiry Date (YYMMDD)</label>
-            <input type="text" id="expiry" maxlength="6" placeholder="300409">
+            <label>Expiry (YYMMDD)</label>
+            <input type="text" id="expiry" placeholder="300409" maxlength="6">
         </div>
-        <div class="input-group" style="grid-column: span 2;">
-            <label>Personal Number (Optional)</label>
-            <input type="text" id="personalNum" maxlength="14" placeholder="1234567890">
+        <div class="input-group">
+            <label>Personal ID</label>
+            <input type="text" id="personalNum" placeholder="Optional" maxlength="14">
         </div>
     </div>
 
     <div class="output-container">
-        <div class="output-box" id="mrzOutput">আউটপুট এখানে দেখাবে...</div>
+        <div class="output-box" id="mrzOutput">WAITING FOR DATA...</div>
     </div>
     
-    <button class="copy-btn" onclick="copyResult()">COPY RESULT</button>
+    <div class="actions">
+        <button class="btn copy-btn" onclick="copyResult()">Copy Result</button>
+        <button class="btn reset-btn" onclick="window.location.reload()">Reset</button>
+    </div>
 
     <div class="footer">
-        Developed By: Ariful | WhatsApp: +8801981071493
+        Developed By: <span>Ariful</span> | WhatsApp: <span>+8801981071493</span>
     </div>
 </div>
 
 <script>
     const inputs = document.querySelectorAll('input, select');
-    inputs.forEach(input => {
-        input.addEventListener('input', updateMRZ);
-    });
+    inputs.forEach(input => input.addEventListener('input', updateMRZ));
 
     function getCheckDigit(data) {
         const weights = [7, 3, 1];
@@ -97,8 +129,7 @@
     }
 
     function pad(str, length) {
-        if (!str) str = "";
-        str = str.toUpperCase().replace(/[^A-Z0-9]/g, '<');
+        str = (str || "").toUpperCase().replace(/[^A-Z0-9]/g, '<');
         while (str.length < length) str += '<';
         return str.substring(0, length);
     }
@@ -108,24 +139,21 @@
         const country = pad(document.getElementById('country').value || "BGD", 3);
         const surname = document.getElementById('surname').value.toUpperCase().replace(/[^A-Z0-9]/g, '<');
         const givenNames = document.getElementById('givenNames').value.toUpperCase().replace(/[^A-Z0-9]/g, '<');
-        
         const passport = pad(document.getElementById('passport').value, 9);
         const dob = pad(document.getElementById('dob').value, 6);
         const gender = document.getElementById('gender').value;
         const expiry = pad(document.getElementById('expiry').value, 6);
         const personalNum = pad(document.getElementById('personalNum').value, 14);
 
-        // LINE 1: Type(2) + Country(3) + Name(39) = 44
+        // Line 1
         let nameField = pad(surname + "<<" + givenNames, 39);
-        let line1 = (docType + "<" + country + nameField).substring(0, 44);
+        let line1 = docType + "<" + country + nameField;
 
-        // LINE 2: Passport(9)+CD(1) + Country(3) + DOB(6)+CD(1) + Sex(1) + Expiry(6)+CD(1) + Personal(14)+CD(1) + CompositeCD(1) = 44
+        // Line 2
         let pCheck = getCheckDigit(passport);
         let dobCheck = getCheckDigit(dob);
         let expiryCheck = getCheckDigit(expiry);
         let personalCheck = getCheckDigit(personalNum);
-
-        // Composite Check Digit Calculation
         let compositeSource = passport + pCheck + dob + dobCheck + expiry + expiryCheck + personalNum + personalCheck;
         let finalCheck = getCheckDigit(compositeSource);
 
@@ -136,13 +164,13 @@
 
     function copyResult() {
         const text = document.getElementById('mrzOutput').innerText;
+        if(text.includes("WAITING")) return;
         navigator.clipboard.writeText(text).then(() => {
-            alert("MRZ Copied Successfully!");
+            alert("MRZ Copied to Clipboard!");
         });
     }
 
-    // Initial call
-    updateMRZ();
+    updateMRZ(); 
 </script>
 
 </body>
