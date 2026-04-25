@@ -2,41 +2,48 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARIFUL UNIVERSAL MRZ GENERATOR</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f4f4f4; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h2, p { text-align: center; }
-        input, select { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
-        #result { width: 100%; padding: 15px; background: #1a1a1a; color: #00ff00; font-family: monospace; font-size: 14px; margin-top: 20px; border: none; white-space: pre; }
-        .btn-copy { width: 100%; padding: 15px; background: #28a745; color: white; border: none; cursor: pointer; margin-top: 10px; font-weight: bold; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; padding: 20px; }
+        .container { max-width: 650px; margin: auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #333; margin-bottom: 5px; }
+        .whatsapp { text-align: center; color: #555; margin-bottom: 20px; font-weight: bold; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 12px; color: #777; margin-bottom: 5px; text-transform: uppercase; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
+        #result { width: 100%; padding: 15px; background: #000; color: #00ff00; font-family: 'Courier New', Courier, monospace; font-size: 16px; margin-top: 25px; border: none; border-radius: 5px; min-height: 60px; resize: none; }
+        .btn-copy { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; }
+        .btn-copy:hover { background: #218838; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>ARIFUL UNIVERSAL MRZ GENERATOR</h2>
-    <p>WhatsApp: +8801981071493</p>
+    <div class="whatsapp">WhatsApp: +8801981071493</div>
 
-    <select id="docType" onchange="generateMRZ()">
-        <option value="P">P</option>
-        <option value="PM">PM</option>
-    </select>
-    
-    <input type="text" id="country" placeholder="COUNTRY CODE (e.g., BGD)" oninput="generateMRZ()">
-    <input type="text" id="passport" placeholder="PASSPORT NO" oninput="generateMRZ()">
-    <input type="text" id="surname" placeholder="SURNAME" oninput="generateMRZ()">
-    <input type="text" id="givenNames" placeholder="GIVEN NAMES" oninput="generateMRZ()">
-    <select id="gender" onchange="generateMRZ()">
-        <option value="M">Male</option>
-        <option value="F">Female</option>
-    </select>
-    <input type="text" id="dob" placeholder="DOB (YYMMDD)" oninput="generateMRZ()">
-    <input type="text" id="expiry" placeholder="EXPIRY (YYMMDD)" oninput="generateMRZ()">
-    <input type="text" id="personalId" placeholder="PERSONAL ID" oninput="generateMRZ()">
+    <div class="form-group">
+        <label>DOC TYPE</label>
+        <select id="docType" oninput="generateMRZ()">
+            <option value="P">P</option>
+            <option value="PM">PM</option>
+        </select>
+    </div>
+    <div class="form-group"><input type="text" id="country" placeholder="COUNTRY CODE (BGD)" oninput="generateMRZ()"></div>
+    <div class="form-group"><input type="text" id="passport" placeholder="PASSPORT NO" oninput="generateMRZ()"></div>
+    <div class="form-group"><input type="text" id="surname" placeholder="SURNAME" oninput="generateMRZ()"></div>
+    <div class="form-group"><input type="text" id="givenNames" placeholder="GIVEN NAMES" oninput="generateMRZ()"></div>
+    <div class="form-group">
+        <select id="gender" oninput="generateMRZ()">
+            <option value="M">Male</option>
+            <option value="F">Female</option>
+        </select>
+    </div>
+    <div class="form-group"><input type="text" id="dob" placeholder="DOB (YYMMDD)" oninput="generateMRZ()"></div>
+    <div class="form-group"><input type="text" id="expiry" placeholder="EXPIRY (YYMMDD)" oninput="generateMRZ()"></div>
+    <div class="form-group"><input type="text" id="personalId" placeholder="PERSONAL ID" oninput="generateMRZ()"></div>
 
-    <textarea id="result" rows="3" readonly></textarea>
+    <textarea id="result" readonly></textarea>
     <button class="btn-copy" onclick="copyResult()">COPY RESULT</button>
 </div>
 
@@ -47,23 +54,22 @@
         const surname = document.getElementById('surname').value.toUpperCase() || "SURNAME";
         const given = document.getElementById('givenNames').value.toUpperCase() || "GIVEN";
         const gender = document.getElementById('gender').value;
+        const dob = document.getElementById('dob').value;
+        const expiry = document.getElementById('expiry').value;
+
+        // MRZ লাইন তৈরি
+        const line1 = ${type}<${country}${surname}<<${given}.padEnd(44, '<');
+        const line2 = ${document.getElementById('passport').value.padEnd(9, '<')}${document.getElementById('personalId').value.padEnd(1, '<')}${country}${dob}0${gender}${expiry}0<<<<<<<<<<<<<<00;
         
-        // MRZ ফরম্যাট অনুযায়ী তৈরি
-        const mrzLine1 = ${type}<${country}${surname}<<${given};
-        const mrzLine2 = <<<<<<<<<<0${country}<<<<<<0${gender}<<<<<<0<<<<<<<<<<<<<<00;
-        
-        document.getElementById('result').value = mrzLine1.padEnd(44, '<') + "\n" + mrzLine2.padEnd(44, '<');
+        document.getElementById('result').value = line1 + "\n" + line2;
     }
 
     function copyResult() {
         const copyText = document.getElementById("result");
         copyText.select();
         document.execCommand("copy");
-        alert("Copied to clipboard!");
+        alert("Copied!");
     }
-
-    // পেজ লোড হওয়ার সাথে সাথে ডিফল্ট জেনারেশন
-    generateMRZ();
 </script>
 
 </body>
