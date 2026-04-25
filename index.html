@@ -7,19 +7,17 @@
         body { font-family: sans-serif; background-color: #f0f2f5; padding: 20px; }
         .container { max-width: 850px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 5px solid #28a745; }
         .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
-        input, select { width: 100%; padding: 12px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; }
-        #result { width: 100%; height: 120px; background: #000; color: #00ff00; font-family: 'Courier New', monospace; font-size: 20px; padding: 15px; border: none; resize: none; box-sizing: border-box; }
-        .btn-copy { width: 100%; padding: 18px; background: #28a745; color: white; border: none; cursor: pointer; font-size: 18px; font-weight: bold; border-radius: 5px; margin-top: 15px; }
-        .footer { text-align: center; margin-top: 25px; font-size: 14px; color: #555; font-weight: bold; }
+        input, select { width: 100%; padding: 12px; margin-top: 5px; border: 1px solid #ccc; border-radius: 5px; }
+        #result { width: 100%; height: 100px; background: #000; color: #00ff00; font-family: 'Courier New', monospace; font-size: 18px; padding: 15px; border: none; resize: none; }
+        .btn-copy { width: 100%; padding: 15px; background: #28a745; color: white; border: none; cursor: pointer; font-size: 18px; font-weight: bold; border-radius: 5px; margin-top: 15px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2 style="text-align:center;">ARIFUL UNIVERSAL MRZ GENERATOR</h2>
-    
     <div class="grid-container">
-        <div><label>DOC TYPE</label><select id="docType" oninput="generateMRZ()"><option value="P">P</option><option value="PM">PM</option></select></div>
+        <div><label>DOC TYPE</label><select id="docType" oninput="generateMRZ()"><option value="P">P</option></select></div>
         <div><label>COUNTRY</label><input type="text" id="country" value="JPN" oninput="generateMRZ()"></div>
         <div><label>PASSPORT NO</label><input type="text" id="passport" oninput="generateMRZ()"></div>
         <div><label>SURNAME</label><input type="text" id="surname" oninput="generateMRZ()"></div>
@@ -27,15 +25,9 @@
         <div><label>GENDER</label><select id="gender" oninput="generateMRZ()"><option value="M">Male</option><option value="F">Female</option></select></div>
         <div><label>DOB (YYMMDD)</label><input type="text" id="dob" oninput="generateMRZ()"></div>
         <div><label>EXPIRY (YYMMDD)</label><input type="text" id="expiry" oninput="generateMRZ()"></div>
-        <div><label>PERSONAL ID</label><input type="text" id="personalId" oninput="generateMRZ()"></div>
     </div>
-
     <textarea id="result" readonly></textarea>
     <button class="btn-copy" onclick="copyResult()">COPY RESULT</button>
-    
-    <div class="footer">
-        Developed By: Ariful | WhatsApp: +8801981071493
-    </div>
 </div>
 
 <script>
@@ -44,10 +36,7 @@
         let sum = 0;
         for (let i = 0; i < str.length; i++) {
             let char = str[i];
-            let val;
-            if (char === '<') val = 0;
-            else if (char >= '0' && char <= '9') val = parseInt(char);
-            else val = char.charCodeAt(0) - 55;
+            let val = (char === '<') ? 0 : parseInt(char, 36);
             sum += val * weights[i % 3];
         }
         return sum % 10;
@@ -62,28 +51,29 @@
         const gen = document.getElementById('gender').value;
         const dob = document.getElementById('dob').value;
         const exp = document.getElementById('expiry').value;
-        const pid = document.getElementById('personalId').value.toUpperCase();
 
-        // লাইন ১ তৈরি
+        // লাইন ১ (ফিক্সড ৪৪ ক্যারেক্টার)
         let line1 = (type + "<" + country + sur + "<<" + giv).padEnd(44, '<');
         
-        // লাইন ২-এর চেক ডিজিট ক্যালকুলেশন
+        // লাইন ২-এর ক্যালকুলেশন
         const pCheck = getCheckDigit(pass);
         const dCheck = getCheckDigit(dob);
         const eCheck = getCheckDigit(exp);
         
-        let line2Base = pass + pCheck + country.substring(0,3) + dob + dCheck + gen + exp + eCheck + pid;
-        let finalLine2 = line2Base.padEnd(43, '<');
-        let compositeCheck = getCheckDigit(finalLine2);
+        // লাইন ২-এর মূল ডেটা (৪১ ক্যারেক্টার পর্যন্ত)
+        let line2Base = pass + pCheck + country.substring(0,3) + dob + dCheck + gen + exp + eCheck;
         
-        document.getElementById('result').value = line1 + "\n" + finalLine2 + compositeCheck;
+        // লাইন ২ পূর্ণ করা (৪৩ ক্যারেক্টার পর্যন্ত ফিল করা এবং সবশেষে চেক ডিজিট)
+        let finalLine2Part = line2Base.padEnd(43, '<');
+        let compositeCheck = getCheckDigit(finalLine2Part);
+        
+        document.getElementById('result').value = line1 + "\n" + finalLine2Part + compositeCheck;
     }
 
     function copyResult() {
-        const copyText = document.getElementById("result");
-        copyText.select();
+        document.getElementById("result").select();
         document.execCommand("copy");
-        alert("MRZ Copied successfully!");
+        alert("Copied!");
     }
 </script>
 </body>
