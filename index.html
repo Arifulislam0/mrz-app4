@@ -8,7 +8,6 @@
         .container { max-width: 850px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-top: 5px solid #28a745; }
         .grid-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
         input, select { width: 100%; padding: 12px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; }
-        /* রেজাল্ট বক্স বড় করা হয়েছে */
         #result { width: 100%; height: 120px; background: #000; color: #00ff00; font-family: 'Courier New', monospace; font-size: 20px; padding: 15px; border: none; resize: none; box-sizing: border-box; }
         .btn-copy { width: 100%; padding: 18px; background: #28a745; color: white; border: none; cursor: pointer; font-size: 18px; font-weight: bold; border-radius: 5px; margin-top: 15px; }
         .footer { text-align: center; margin-top: 25px; font-size: 14px; color: #555; font-weight: bold; }
@@ -21,7 +20,7 @@
     
     <div class="grid-container">
         <div><label>DOC TYPE</label><select id="docType" oninput="generateMRZ()"><option value="P">P</option><option value="PM">PM</option></select></div>
-        <div><label>COUNTRY</label><input type="text" id="country" value="BGD" oninput="generateMRZ()"></div>
+        <div><label>COUNTRY</label><input type="text" id="country" value="JPN" oninput="generateMRZ()"></div>
         <div><label>PASSPORT NO</label><input type="text" id="passport" oninput="generateMRZ()"></div>
         <div><label>SURNAME</label><input type="text" id="surname" oninput="generateMRZ()"></div>
         <div><label>GIVEN NAMES</label><input type="text" id="givenNames" oninput="generateMRZ()"></div>
@@ -45,7 +44,10 @@
         let sum = 0;
         for (let i = 0; i < str.length; i++) {
             let char = str[i];
-            let val = (char === '<') ? 0 : parseInt(char, 36);
+            let val;
+            if (char === '<') val = 0;
+            else if (char >= '0' && char <= '9') val = parseInt(char);
+            else val = char.charCodeAt(0) - 55;
             sum += val * weights[i % 3];
         }
         return sum % 10;
@@ -55,29 +57,33 @@
         const type = document.getElementById('docType').value;
         const country = document.getElementById('country').value.toUpperCase().padEnd(3, '<');
         const pass = document.getElementById('passport').value.toUpperCase();
-        const sur = document.getElementById('surname').value.toUpperCase();
-        const giv = document.getElementById('givenNames').value.toUpperCase();
+        const sur = document.getElementById('surname').value.toUpperCase().replace(/\s+/g, '<');
+        const giv = document.getElementById('givenNames').value.toUpperCase().replace(/\s+/g, '<');
         const gen = document.getElementById('gender').value;
         const dob = document.getElementById('dob').value;
         const exp = document.getElementById('expiry').value;
         const pid = document.getElementById('personalId').value.toUpperCase();
 
-        const line1 = (type + "<" + country + sur + "<<" + giv).padEnd(44, '<');
+        // লাইন ১ তৈরি
+        let line1 = (type + "<" + country + sur + "<<" + giv).padEnd(44, '<');
         
+        // লাইন ২-এর চেক ডিজিট ক্যালকুলেশন
         const pCheck = getCheckDigit(pass);
         const dCheck = getCheckDigit(dob);
         const eCheck = getCheckDigit(exp);
         
-        const line2Base = pass + pCheck + country + dob + dCheck + gen + exp + eCheck + pid;
-        const finalLine2 = line2Base.padEnd(43, '<') + getCheckDigit(line2Base);
+        let line2Base = pass + pCheck + country.substring(0,3) + dob + dCheck + gen + exp + eCheck + pid;
+        let finalLine2 = line2Base.padEnd(43, '<');
+        let compositeCheck = getCheckDigit(finalLine2);
         
-        document.getElementById('result').value = line1 + "\n" + finalLine2;
+        document.getElementById('result').value = line1 + "\n" + finalLine2 + compositeCheck;
     }
 
     function copyResult() {
-        document.getElementById("result").select();
+        const copyText = document.getElementById("result");
+        copyText.select();
         document.execCommand("copy");
-        alert("Copied to clipboard!");
+        alert("MRZ Copied successfully!");
     }
 </script>
 </body>
